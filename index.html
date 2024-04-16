@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <style>
+        /* CSS styles  */
+        body{
+            border: 5px solid black;
+            width: 25%;
+            background-color: rgb(153, 223, 200);
+            padding:5px;
+            height: 100vh;
+         float:right;
+        }
+        table{
+            border: 5px solid black;
+            padding: 10px;
+       }
+        button{
+            background-color: aquamarine;
+       }
+        .pay{
+            padding: 8px;
+            margin-left: 40px;
+        }
+        
+    </style>
+</head>
+<body>
+    <h1>Shopping Cart :</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Like</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody id="cart-items">
+            <!-- Cart items  here -->
+        </tbody>
+    </table>
+    <p>Total Price: $<span id="total-price">0.00</span> <button class="pay">PAY NOW</button></p>
+
+    <script>
+        //  data
+        const items = [
+            { name: 'T-shirt', price: 10 },
+            { name: 'Jeans', price: 30 },
+            { name: 'Sneakers', price: 50 }
+        ];
+
+        const cartItems = [];
+
+        function renderCart() {
+            const cartTable = document.getElementById('cart-items');
+            cartTable.innerHTML = '';
+
+            let totalPrice = 0;
+
+            cartItems.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                   <td>${item.name}</td>
+                    <td>
+                        <button onclick="decreaseQuantity(${item.id})">-</button>
+                        ${item.quantity}
+                        <button onclick="increaseQuantity(${item.id})">+</button>
+                    </td>
+                    <td>$${(item.price * item.quantity).toFixed(2)}</td>
+                    <td><button onclick="toggleLike(${item.id})">${item.liked ? '❤️' : '🤍'}</button></td>
+                    <td><button onclick="deleteItem(${item.id})">❌</button></td>
+                `;
+                cartTable.appendChild(row);
+                totalPrice += item.price * item.quantity;
+            });
+
+            document.getElementById('total-price').textContent = totalPrice.toFixed(2);
+        }
+
+        function increaseQuantity(itemId) {
+            const item = cartItems.find(item => item.id === itemId);
+            if (item) {
+                item.quantity++;
+                renderCart();
+            }
+        }
+
+        function decreaseQuantity(itemId) {
+            const item = cartItems.find(item => item.id === itemId);
+            if (item && item.quantity > 1) {
+                item.quantity--;
+                renderCart();
+            }
+        }
+
+        function toggleLike(itemId) {
+            const item = cartItems.find(item => item.id === itemId);
+            if (item) {
+                item.liked = !item.liked;
+                renderCart();
+            }
+        }
+
+        function deleteItem(itemId) {
+            const index = cartItems.findIndex(item => item.id === itemId);
+            if (index !== -1) {
+                cartItems.splice(index, 1);
+                renderCart();
+            }
+        }
+
+        // Initialize cart with data
+        items.forEach((item, index) => {
+            cartItems.push({ id: index, name: item.name, price: item.price, quantity: 1, liked: false });
+        });
+
+        // initial cart
+        renderCart();
+    </script>
+</body>
+</html>
